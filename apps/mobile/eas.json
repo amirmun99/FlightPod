@@ -1,0 +1,36 @@
+{
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "FLIGHTPAPER_BUILD_PROFILE": "development"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "FLIGHTPAPER_BUILD_PROFILE": "preview"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "FLIGHTPAPER_BUILD_PROFILE": "production"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -1,0 +1,56 @@
+[Unit]
+Description=FlightPaper — Raspberry Pi ePaper aircraft display
+Documentation=https://github.com/your-fork/rpi-flightpod
+After=network-online.target
+Wants=network-online.target
+# pisugar-server runs the official battery service when installed.
+# We don't hard-require it; FlightPaper degrades gracefully to
+# "no battery info" if the socket can't be opened.
+After=pisugar-server.service
+Wants=pisugar-server.service
+
+[Service]
+Type=simple
+# SPI + the Waveshare driver run smoothest with full root. The package
+# is read-only at install time so this is acceptable for an MVP single-
+# user device. Drop to a dedicated user later if you want to harden it.
+User=root
+Group=root
+WorkingDirectory=/opt/flightpaper
+
+# Optional environment file for OpenSky credentials etc.
+#   echo 'OPENSKY_CLIENT_ID=your-id' | sudo tee -a /etc/flightpaper/env
+#   echo 'OPENSKY_CLIENT_SECRET=…'    | sudo tee -a /etc/flightpaper/env
+EnvironmentFile=-/etc/flightpaper/env
+
+# Honour FLIGHTPAPER_CONFIG so the package picks up /etc/flightpaper/config.yml
+# (default search path).
+Environment=FLIGHTPAPER_CONFIG=/etc/flightpaper/config.yml
+Environment=PYTHONUNBUFFERED=1
+
+ExecStart=/opt/flightpaper/.venv/bin/python -m flightpaper.main
+
+Restart=always
+RestartSec=5
+StartLimitInterval=300
+StartLimitBurst=10
+
+# Be polite on shutdown so the ePaper has a chance to render the
+# shutdown screen and the OpenSky poller can cancel its in-flight
+# request.
+KillSignal=SIGTERM
+TimeoutStopSec=15
+
+# Send stdout/stderr to journald so `journalctl -u flightpaper -f` works.
+StandardOutput=journal
+StandardError=journal
+
+# Light hardening — the service is single-purpose. These don't block
+# SPI / I2C access.
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

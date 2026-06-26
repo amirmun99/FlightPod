@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flightpaper.local/schemas/secure-envelope.json",
+  "title": "FlightPaper secure envelope (v1)",
+  "description": "Outer wrapper for every protected request and response. The plaintext shape is endpoint-specific and validated separately after AEAD verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "device_id",
+    "client_id",
+    "key_id",
+    "seq",
+    "ts",
+    "nonce",
+    "ciphertext"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^fp_[0-9a-f]{8}$"
+    },
+    "client_id": {
+      "type": "string",
+      "pattern": "^iphone_[0-9a-f]{12}$"
+    },
+    "key_id": {
+      "type": "string",
+      "enum": ["pairing", "main"],
+      "description": "Which key encrypts this envelope. 'pairing' only during the handshake; 'main' for all subsequent traffic."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Per-(device, client, key, direction) strictly monotonic counter. 0 reserved for pairing handshake."
+    },
+    "ts": {
+      "type": "integer",
+      "description": "Sender UNIX seconds."
+    },
+    "nonce": {
+      "type": "string",
+      "description": "Base64url-encoded 24-byte AEAD nonce.",
+      "pattern": "^[A-Za-z0-9_-]{32}$"
+    },
+    "ciphertext": {
+      "type": "string",
+      "description": "Base64url-encoded AEAD ciphertext (including 16-byte Poly1305 tag).",
+      "pattern": "^[A-Za-z0-9_-]+={0,2}$",
+      "minLength": 24
+    }
+  }
+}

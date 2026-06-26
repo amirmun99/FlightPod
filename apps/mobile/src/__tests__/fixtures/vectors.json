@@ -1,0 +1,52 @@
+{
+  "inputs": {
+    "pairing_secret_b64u": "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI",
+    "device_id": "fp_aabbccdd",
+    "device_pub_b64u": "ERERERERERERERERERERERERERERERERERERERERERE",
+    "phone_priv_b64u": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c",
+    "client_id": "iphone_aabbccddeeff",
+    "aead_key_b64u": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo",
+    "aead_nonce_b64u": "u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7",
+    "aead_aad_utf8": "v=1|m=POST|p=/test|d=fp_aabbccdd|c=iphone_aabbccddeeff|k=main|s=1|t=1700000000",
+    "aead_plaintext_utf8": "hello world"
+  },
+  "expected": {
+    "pairing_key_b64u": "K75o5oa1BGpLak8l2AcqLRsYm-DeAqlXTo_25VmiCKk",
+    "session_key_b64u": "KHGoYiXY0w9zdZ_HkvUAqCsFExuWq_f7FuR1OyeB8L4",
+    "aead_ciphertext_b64u": "1RvQFtyBDq3ZqKFySPD2vC__F5-AVjhW3awt"
+  },
+  "pair_uri_sample": {
+    "payload": {
+      "v": 1,
+      "host": "172.20.10.4",
+      "port": 8080,
+      "device_id": "fp_aabbccdd",
+      "device_name": "FlightPaper",
+      "device_pub": "ERERERERERERERERERERERERERERERERERERERERERE",
+      "pairing_secret": "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI",
+      "expires_at": 1700000600,
+      "code": "123-456"
+    },
+    "uri": "flightpaper://pair?p=eyJjb2RlIjoiMTIzLTQ1NiIsImRldmljZV9pZCI6ImZwX2FhYmJjY2RkIiwiZGV2aWNlX25hbWUiOiJGbGlnaHRQYXBlciIsImRldmljZV9wdWIiOiJFUkVSRVJFUkVSRVJFUkVSRVJFUkVSRVJFUkVSRVJFUkVSRVJFUkVSRVJFIiwiZXhwaXJlc19hdCI6MTcwMDAwMDYwMCwiaG9zdCI6IjE3Mi4yMC4xMC40IiwicGFpcmluZ19zZWNyZXQiOiJRa0pDUWtKQ1FrSkNRa0pDUWtKQ1FrSkNRa0pDUWtKQ1FrSkNRa0pDUWtJIiwicG9ydCI6ODA4MCwidiI6MX0"
+  },
+  "envelope_sample": {
+    "method": "POST",
+    "path": "/api/secure/location",
+    "envelope": {
+      "v": 1,
+      "device_id": "fp_aabbccdd",
+      "client_id": "iphone_aabbccddeeff",
+      "key_id": "main",
+      "seq": 1,
+      "ts": 1700000000,
+      "nonce": "4p41fYCVvUyogBu75UPxpVaFgygi7wja",
+      "ciphertext": "oKiKc4iRqZQphvuHT1B-X1J7cOtwGopoeCk_TAH79pVbilMuX6fW2R-51GB0Vk7XEtUex4yuAcjBr_tGEjhLiMyR4LHeI8Ro2IHBX63PgMVoaZ50ieV3HIzezQk3tcwzvg"
+    },
+    "plaintext": {
+      "lat": 43.3255,
+      "lon": -79.799,
+      "timestamp": 1700000000,
+      "source": "iphone_background"
+    }
+  }
+}

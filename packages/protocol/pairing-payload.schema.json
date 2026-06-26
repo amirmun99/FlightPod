@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flightpaper.local/schemas/pairing-payload.json",
+  "title": "FlightPaper QR pairing payload (v1)",
+  "description": "Decoded JSON of the `p` query parameter on a flightpaper:// pair URI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "host",
+    "port",
+    "device_id",
+    "device_name",
+    "device_pub",
+    "pairing_secret",
+    "expires_at"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1,
+      "description": "Protocol version."
+    },
+    "host": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "IPv4/IPv6/.local host where the Pi is reachable."
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
+      "default": 8080
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^fp_[0-9a-f]{8}$"
+    },
+    "device_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "device_pub": {
+      "type": "string",
+      "description": "Base64url-encoded X25519 public key (32 bytes).",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "pairing_secret": {
+      "type": "string",
+      "description": "Base64url-encoded 32-byte one-time pairing secret.",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "pairing_nonce": {
+      "type": "string",
+      "description": "Optional base64url-encoded nonce echoed in the pair request.",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "expires_at": {
+      "type": "integer",
+      "description": "UNIX seconds. Pi rejects pair attempts after this time."
+    },
+    "code": {
+      "type": "string",
+      "description": "Optional human-readable fallback code (e.g. '123-456'). NOT a substitute for the pairing_secret; only useful for the manual fallback flow with rate limiting.",
+      "pattern": "^[0-9]{3}-[0-9]{3}$"
+    }
+  }
+}

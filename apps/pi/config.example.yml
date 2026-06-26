@@ -1,0 +1,82 @@
+# FlightPaper configuration. Copy to /etc/flightpaper/config.yml on the Pi.
+# Values shown here are the defaults baked into flightpaper.config.AppConfig.
+
+app:
+  name: FlightPaper
+  version: "0.1.0"
+  log_level: INFO            # DEBUG | INFO | WARNING | ERROR
+  timezone: America/Toronto
+
+api:
+  host: "0.0.0.0"
+  port: 8080
+  require_pairing: true
+  secure_envelopes_required: true
+
+security:
+  pairing_enabled: true
+  pairing_expires_seconds: 600
+  max_pairing_attempts: 5
+  replay_window_seconds: 120
+  allow_unencrypted_debug: false
+  secure_dir: /etc/flightpaper/secure
+
+opensky:
+  enabled: true
+  base_url: "https://opensky-network.org/api"
+  auth_enabled: false        # set true and provide OPENSKY_CLIENT_ID/_SECRET to authenticate
+  update_interval_seconds: 20
+  battery_saver_interval_seconds: 60
+  timeout_seconds: 8
+  max_aircraft_age_seconds: 120
+  include_ground_aircraft: false
+  request_extended: false
+  min_interval_seconds: 10
+
+location:
+  primary_source: iphone
+  stale_warning_seconds: 900   # 15 minutes
+  expired_seconds: 3600        # 1 hour
+  manual:
+    enabled: false
+    lat: null
+    lon: null
+    label: Manual
+
+display:
+  width: 250
+  height: 122
+  rotation: 0                # 0 | 90 | 180 | 270
+  driver: waveshare_2in13_rev2_1
+  partial_refresh: true
+  full_refresh_every: 10
+  max_aircraft_drawn: 12
+  max_labels_drawn: 3
+  default_page: radar        # radar | closest | list | status
+
+ui:
+  radius_km: 25
+  radius_options_km: [5, 10, 25, 50, 100]
+  overhead_threshold_km: 2
+  distance_units: km         # km | nm
+  altitude_units: ft         # ft | m
+  speed_units: kt            # kt | mps | kmh
+  north_up: true
+  show_status_bar: true
+
+battery:
+  enabled: true
+  provider: pisugar3
+  pisugar_host: "127.0.0.1"
+  pisugar_port: 8423
+  low_percent: 15
+  critical_percent: 5
+  battery_saver_below_percent: 30
+  safe_shutdown_enabled: true
+
+buttons:
+  enabled: true
+  debounce_ms: 80
+  long_press_ms: 800
+  very_long_press_ms: 3000
+  mapping_profile: minimal   # minimal | multi

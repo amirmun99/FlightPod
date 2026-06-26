@@ -1,0 +1,11 @@
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.tsbuildinfo
+.eas/
+ios/
+android/
+*.orig.*
+.DS_Store

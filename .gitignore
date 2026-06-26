@@ -1,0 +1,65 @@
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Editors
+.vscode/
+.idea/
+*.code-workspace
+
+# Claude Code (local machine settings only)
+.claude/settings.local.json
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+secrets.env
+/etc/flightpaper/secure/*
+
+# Python (apps/pi)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Node / Expo (apps/mobile)
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.tsbuildinfo
+.eas/
+ios/Pods/
+ios/build/
+android/build/
+android/.gradle/
+android/app/build/
+
+# Logs
+*.log
+logs/
+/var/log/flightpaper/
+
+# Generated assets
+apps/pi/scripts/*.png
+apps/pi/scripts/preview_*.png
+*.preview.png
+
+# Test artifacts
+coverage/
+test-results/
