@@ -51,6 +51,10 @@ NoNewPrivileges=true
 ProtectSystem=full
 ProtectHome=true
 PrivateTmp=true
+# ProtectSystem=full mounts /etc read-only. The service must still write its
+# device identity + pairing keys under /etc/flightpaper/secure on first start,
+# so punch a writable hole there. config.yml and env stay read-only at runtime.
+ReadWritePaths=/etc/flightpaper/secure
 
 [Install]
 WantedBy=multi-user.target
