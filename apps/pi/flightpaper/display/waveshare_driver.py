@@ -1,9 +1,9 @@
 """Waveshare 2.13" V2 / Rev2.1 driver shim.
 
-Rather than reimplement the SSD1680 init sequence here, we shell out to
-the official ``waveshare-epaper`` Python module (installed on the Pi via
-the install script). The module is imported lazily so this file is safe
-to import on macOS dev.
+Rather than reimplement the SSD1680 init sequence here, we delegate to
+Waveshare's ``waveshare_epd`` package. That package is not on PyPI, so the
+install script vendors it into the venv from Waveshare's e-Paper repo. The
+module is imported lazily so this file is safe to import on macOS dev.
 
 If anything fails at import or init time the registry catches the
 ``ImportError`` / ``OSError`` and substitutes the null driver — the rest
