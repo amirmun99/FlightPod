@@ -96,7 +96,8 @@ class DisplaySection(BaseModel):
     width: PositiveInt = 250
     height: PositiveInt = 122
     rotation: Literal[0, 90, 180, 270] = 0
-    driver: str = "waveshare_2in13_rev2_1"
+    # "waveshare_2in13_v4" (current panels) | "waveshare_2in13_rev2_1" (older V2)
+    driver: str = "waveshare_2in13_v4"
     partial_refresh: bool = True
     full_refresh_every: PositiveInt = 10
     max_aircraft_drawn: PositiveInt = 12

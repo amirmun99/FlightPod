@@ -42,7 +42,7 @@ def _build_test_image(width: int, height: int) -> Image.Image:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="ePaper smoke test")
-    parser.add_argument("--driver", default="waveshare_2in13_rev2_1")
+    parser.add_argument("--driver", default="waveshare_2in13_v4")
     parser.add_argument("--width", type=int, default=250)
     parser.add_argument("--height", type=int, default=122)
     parser.add_argument("--rotation", type=int, default=0)

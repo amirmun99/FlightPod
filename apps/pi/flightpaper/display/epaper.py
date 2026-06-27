@@ -122,9 +122,11 @@ def make_driver(name: str, *, width: int, height: int, rotation: int = 0) -> EPa
         return NullEPaperDriver(width=width, height=height, rotation=rotation)
 
 
-# Eagerly register Waveshare shim so ``make_driver("waveshare_2in13_rev2_1")``
-# works on the Pi. The actual hardware import is deferred to ``init``.
-from . import waveshare_driver  # noqa: E402, F401 - side-effect import
+# Eagerly register the Waveshare shims so ``make_driver("waveshare_2in13_v4")``
+# (and the V2/Rev2.1 variant) work on the Pi. The actual hardware import is
+# deferred to driver construction / ``init``.
+from . import waveshare_driver  # noqa: E402, F401 - side-effect import (V2/Rev2.1)
+from . import waveshare_driver_v4  # noqa: E402, F401 - side-effect import (V4)
 
 
 __all__ = [

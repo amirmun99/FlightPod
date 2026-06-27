@@ -47,7 +47,7 @@ display:
   width: 250
   height: 122
   rotation: 0                # 0 | 90 | 180 | 270
-  driver: waveshare_2in13_rev2_1
+  driver: waveshare_2in13_v4   # current panels | waveshare_2in13_rev2_1 for older V2
   partial_refresh: true
   full_refresh_every: 10
   max_aircraft_drawn: 12
