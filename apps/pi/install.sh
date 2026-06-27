@@ -52,8 +52,13 @@ APT_PACKAGES=(
   python3-pip
   build-essential
   libsodium-dev
+  # Pillow runtime libs — piwheels wheels link the system copies rather than
+  # bundling them. libfreetype6 is required for TrueType text (every rendered
+  # page), libjpeg for JPEG decode.
   libopenjp2-7
   libtiff6
+  libfreetype6
+  libjpeg62-turbo
   fonts-dejavu-core
   i2c-tools
   git
