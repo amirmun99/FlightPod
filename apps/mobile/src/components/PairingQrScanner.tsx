@@ -1,18 +1,22 @@
 /**
  * Pairing QR scanner.
  *
- * Wraps ``expo-camera``'s ``CameraView`` with a barcode filter limited to
- * QR. Decoded payloads are parsed by :func:`parsePairingUri` and validated
- * by :func:`isPairingQrPayload` before being handed to the caller.
- *
- * The scanner debounces successive scans of the same payload — without
- * this iOS will fire ``onBarcodeScanned`` continuously while a QR is in
- * view.
+ * Uses react-native-vision-camera so we can select the ultra-wide (0.5x)
+ * lens and get continuous autofocus — expo-camera (SDK 51) could do
+ * neither, leaving close-up QR codes out of focus. Decoded payloads are
+ * parsed by parsePairingUri and validated by isPairingQrPayload before
+ * being handed to the caller. Successive scans of the same payload are
+ * debounced.
  */
 
-import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useCodeScanner,
+} from 'react-native-vision-camera';
 
 import { useTheme } from '../app/theme';
 import { b64uDecode, utf8Decode } from '../services/crypto/base64u';
@@ -40,25 +44,33 @@ export const parsePairingUri = (uri: string): PairingQrPayload | null => {
 
 export default function PairingQrScanner({ onScan, onClose }: Props) {
   const theme = useTheme();
-  const [permission, requestPermission] = useCameraPermissions();
+  const { hasPermission, requestPermission } = useCameraPermission();
   const [lastError, setLastError] = useState<string | null>(null);
   const seenUriRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (permission && !permission.granted && permission.canAskAgain) {
-      void requestPermission();
-    }
-  }, [permission, requestPermission]);
+  // Prefer the ultra-wide (0.5x) lens — it focuses far closer than the main
+  // lens, which is what a small QR needs. Fall back to the default back
+  // camera on phones without an ultra-wide. Both hooks always run (the ??
+  // only selects the result), so the rules of hooks are satisfied.
+  const ultraWide = useCameraDevice('back', {
+    physicalDevices: ['ultra-wide-angle-camera'],
+  });
+  const defaultBack = useCameraDevice('back');
+  const device = ultraWide ?? defaultBack;
 
-  const handleScan = useCallback(
-    ({ data }: { data: string }) => {
+  const minZoom = device?.minZoom ?? 1;
+  const maxZoom = device?.maxZoom ?? 1;
+  const [zoom, setZoom] = useState(1);
+
+  const handleData = useCallback(
+    (data: string) => {
       if (data === seenUriRef.current) return;
       seenUriRef.current = data;
       const parsed = parsePairingUri(data);
       if (parsed === null) {
         setLastError('Not a FlightPaper pairing QR.');
-        // Allow re-scanning the same URI after a delay so the user can
-        // hold the device steady while fixing aim.
+        // Allow re-scanning the same URI after a delay so the user can hold
+        // steady while fixing aim.
         setTimeout(() => {
           seenUriRef.current = null;
         }, 1500);
@@ -70,18 +82,20 @@ export default function PairingQrScanner({ onScan, onClose }: Props) {
     [onScan],
   );
 
-  if (!permission) {
-    return (
-      <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: (codes) => {
+      const value = codes[0]?.value;
+      if (value) handleData(value);
+    },
+  });
 
-  if (!permission.granted) {
+  if (!hasPermission) {
     return (
       <View style={[styles.centered, { backgroundColor: theme.colors.background, padding: 24 }]}>
-        <Text style={[theme.typography.body, { color: theme.colors.textPrimary, textAlign: 'center' }]}>
+        <Text
+          style={[theme.typography.body, { color: theme.colors.textPrimary, textAlign: 'center' }]}
+        >
           The QR scanner needs camera access to read your FlightPaper pairing code.
         </Text>
         <View style={{ height: 16 }} />
@@ -100,22 +114,47 @@ export default function PairingQrScanner({ onScan, onClose }: Props) {
     );
   }
 
+  if (!device) {
+    return (
+      <View style={[styles.centered, { backgroundColor: theme.colors.background, padding: 24 }]}>
+        <Text
+          style={[theme.typography.body, { color: theme.colors.textPrimary, textAlign: 'center' }]}
+        >
+          No camera is available on this device.
+        </Text>
+        {onClose ? (
+          <View style={{ marginTop: 12 }}>
+            <Button title="Cancel" onPress={onClose} />
+          </View>
+        ) : null}
+      </View>
+    );
+  }
+
+  const stepZoom = (delta: number) => {
+    setZoom((z) => Math.min(maxZoom, Math.max(minZoom, z + delta)));
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <CameraView
+      <Camera
         style={StyleSheet.absoluteFillObject}
-        facing="back"
-        autofocus="on"
-        barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-        onBarcodeScanned={handleScan}
+        device={device}
+        isActive={true}
+        codeScanner={codeScanner}
+        zoom={zoom}
       />
       <View style={styles.overlay} pointerEvents="none">
         <View style={[styles.frame, { borderColor: theme.colors.accent }]} />
       </View>
+      <View style={styles.zoomBar}>
+        <Button title="–" onPress={() => stepZoom(-1)} />
+        <Text style={styles.zoomLabel}>{`${zoom.toFixed(1)}x`}</Text>
+        <Button title="+" onPress={() => stepZoom(1)} />
+      </View>
       <View style={styles.bottomBar}>
         <Text style={[theme.typography.callout, styles.helper]}>
-          {lastError ??
-            'Hold the phone ~15 cm from your FlightPaper screen and let it focus. Pinch to zoom in.'}
+          {lastError ?? 'Point the camera at the QR. Move closer until it focuses; use –/+ to zoom.'}
         </Text>
         {onClose ? <Button title="Cancel" onPress={onClose} /> : null}
       </View>
@@ -139,6 +178,23 @@ const styles = StyleSheet.create({
     height: 240,
     borderWidth: 2,
     borderRadius: 14,
+  },
+  zoomBar: {
+    position: 'absolute',
+    top: 48,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  zoomLabel: {
+    color: '#FFFFFF',
+    minWidth: 44,
+    textAlign: 'center',
   },
   bottomBar: {
     position: 'absolute',
