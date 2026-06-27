@@ -105,6 +105,7 @@ export default function PairingQrScanner({ onScan, onClose }: Props) {
       <CameraView
         style={StyleSheet.absoluteFillObject}
         facing="back"
+        autofocus="on"
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         onBarcodeScanned={handleScan}
       />
@@ -113,7 +114,8 @@ export default function PairingQrScanner({ onScan, onClose }: Props) {
       </View>
       <View style={styles.bottomBar}>
         <Text style={[theme.typography.callout, styles.helper]}>
-          {lastError ?? 'Point the camera at the QR shown on your FlightPaper device.'}
+          {lastError ??
+            'Hold the phone ~15 cm from your FlightPaper screen and let it focus. Pinch to zoom in.'}
         </Text>
         {onClose ? <Button title="Cancel" onPress={onClose} /> : null}
       </View>
