@@ -109,21 +109,20 @@ def render_boot(draw: "ImageDraw", image: "PILImage", state: "AppState") -> None
 def render_pairing(draw: "ImageDraw", image: "PILImage", state: "AppState") -> None:
     from .qr import QrRenderError, render_pairing_qr  # local import to avoid cycle
 
-    title = title_font()
     label = label_font()
     status = status_font()
 
-    draw.text((4, 0), "PAIR FLIGHTPAPER", font=title, fill=symbols.BLACK)
-
-    # Right column text (after the QR).
-    qr_size = 80
-    qr_left = 0
-    qr_top = 26
+    # No page title — the 250x122 panel can't spare the rows. The QR fills
+    # the left of the panel; pairing details sit in a column to its right.
+    qr_left = 4
+    qr_top = 5
+    # Clamp so the QR can never run off the bottom of the panel.
+    qr_size = min(112, image.height - 2 * qr_top)
 
     try:
         uri = state.pairing.qr_uri()
         qr_img = render_pairing_qr(uri, target_px=qr_size)
-        image.paste(qr_img, (qr_left + 4, qr_top))
+        image.paste(qr_img, (qr_left, qr_top))
         payload = state.pairing.qr_payload()
         host_text = f"IP: {payload['host']}"
         code_text = f"Code: {payload['code']}"
@@ -136,15 +135,15 @@ def render_pairing(draw: "ImageDraw", image: "PILImage", state: "AppState") -> N
         ttl_text = "Open app"
         # Placeholder square where the QR would go.
         draw.rectangle(
-            (qr_left + 4, qr_top, qr_left + 4 + qr_size, qr_top + qr_size),
+            (qr_left, qr_top, qr_left + qr_size, qr_top + qr_size),
             outline=symbols.BLACK,
         )
 
-    right_x = qr_left + 4 + qr_size + 8
-    draw.text((right_x, qr_top), "Scan in app", font=label, fill=symbols.BLACK)
-    draw.text((right_x, qr_top + 16), host_text, font=status, fill=symbols.BLACK)
-    draw.text((right_x, qr_top + 32), code_text, font=status, fill=symbols.BLACK)
-    draw.text((right_x, qr_top + 48), ttl_text, font=status, fill=symbols.BLACK)
+    right_x = qr_left + qr_size + 10
+    draw.text((right_x, 8), "Scan in app", font=label, fill=symbols.BLACK)
+    draw.text((right_x, 34), host_text, font=status, fill=symbols.BLACK)
+    draw.text((right_x, 60), code_text, font=status, fill=symbols.BLACK)
+    draw.text((right_x, 86), ttl_text, font=status, fill=symbols.BLACK)
 
 
 # ---------------------------------------------------------------------------
