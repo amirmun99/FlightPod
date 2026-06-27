@@ -149,7 +149,13 @@ async def display_refresh_loop(
     interval = max(2.0, float(state.config.opensky.update_interval_seconds) / 2.0)
 
     partial_count = 0
-    last_page = state.current_page
+    # Seed to None (not the current page) so the first iteration always
+    # renders the initial page. Otherwise a fresh boot — where the page is
+    # set to "boot"/"pairing" by direct assignment, not set_page(), so
+    # force_refresh stays False — never pushes that first frame to the panel
+    # until a page change or the first successful data poll, leaving the
+    # pairing QR invisible and unscannable.
+    last_page: str | None = None
 
     try:
         while not state.stop_event.is_set():
