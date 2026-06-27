@@ -27,7 +27,6 @@
     "@stablelib/x25519": "^2.0.1",
     "@stablelib/xchacha20poly1305": "^2.0.1",
     "expo": "~51.0.39",
-    "expo-camera": "~15.0.16",
     "expo-constants": "~16.0.2",
     "expo-linking": "~6.3.1",
     "expo-location": "~17.0.1",

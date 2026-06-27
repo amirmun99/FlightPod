@@ -98,10 +98,13 @@ const config: ExpoConfig = {
       },
     ],
     [
-      'expo-camera',
+      'react-native-vision-camera',
       {
-        cameraPermission:
+        cameraPermissionText:
           'FlightPaper uses the camera to scan the pairing QR code shown on your FlightPaper device.',
+        enableMicrophonePermission: false,
+        enableCodeScanner: true,
+        enableFrameProcessors: false,
       },
     ],
   ],

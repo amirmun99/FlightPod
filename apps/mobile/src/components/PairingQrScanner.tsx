@@ -2,8 +2,7 @@
  * Pairing QR scanner.
  *
  * Uses react-native-vision-camera so we can select the ultra-wide (0.5x)
- * lens and get continuous autofocus — expo-camera (SDK 51) could do
- * neither, leaving close-up QR codes out of focus. Decoded payloads are
+ * lens and get continuous autofocus for reliable close-up QR code scanning. Decoded payloads are
  * parsed by parsePairingUri and validated by isPairingQrPayload before
  * being handed to the caller. Successive scans of the same payload are
  * debounced.
