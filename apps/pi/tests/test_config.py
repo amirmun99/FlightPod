@@ -15,7 +15,7 @@ def test_defaults_match_spec() -> None:
     assert cfg.api.port == 8080
     assert cfg.opensky.update_interval_seconds == 20
     assert cfg.opensky.battery_saver_interval_seconds == 60
-    assert cfg.display.driver == "waveshare_2in13_rev2_1"
+    assert cfg.display.driver == "waveshare_2in13_v4"
     assert cfg.display.width == 250
     assert cfg.display.height == 122
     assert cfg.ui.radius_km == 25
