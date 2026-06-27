@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
+
 import pytest
 
-from flightpaper.display.qr import QrRenderError, TARGET_MAX_PX, render_qr_image
+from flightpaper.display.qr import QrRenderError, TARGET_MAX_PX, render_pairing_qr, render_qr_image
 from flightpaper.security.pairing import build_pair_uri
 
 
@@ -51,3 +53,18 @@ def test_oversized_payload_raises() -> None:
 def test_empty_text_rejected() -> None:
     with pytest.raises(QrRenderError):
         render_qr_image("")
+
+
+def test_target_max_is_120() -> None:
+    assert TARGET_MAX_PX == 120
+
+
+def test_default_quiet_zone_is_four_modules() -> None:
+    # QR spec requires a 4-module quiet zone for reliable decoding.
+    default = inspect.signature(render_qr_image).parameters["border_modules"].default
+    assert default == 4
+
+
+def test_renders_pairing_qr_at_112() -> None:
+    img = render_pairing_qr("flightpaper://pair?p=" + "A" * 120, target_px=112)
+    assert img.size == (112, 112)

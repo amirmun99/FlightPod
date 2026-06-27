@@ -1,8 +1,8 @@
 """QR rendering for the ePaper pairing page.
 
 The Waveshare 2.13" is 250x122 pixels and the QR must share the screen
-with text. We target ≤ 96x96 px, single-bit, no border padding beyond what
-the QR spec strictly requires.
+with text. We target ≤ 120x120 px with a 4-module quiet zone (the QR-spec
+minimum) so close-up phone scans decode reliably.
 
 To keep the QR scannable the pairing payload is kept small (no IPv6, short
 device names) and the QR uses error-correction level ``L`` (low). If
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 # Target footprint constraints from spec §11.
-TARGET_MAX_PX: int = 96
+TARGET_MAX_PX: int = 120
 
 
 class QrRenderError(Exception):
@@ -32,7 +32,7 @@ def render_qr_image(
     text: str,
     *,
     target_px: int = TARGET_MAX_PX,
-    border_modules: int = 1,
+    border_modules: int = 4,
 ) -> "PILImage":
     """Render ``text`` as a 1-bit PIL image no larger than ``target_px``."""
 
